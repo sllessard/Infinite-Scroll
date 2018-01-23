@@ -1,5 +1,6 @@
 # Infinite-Scroll
 Utilize site pagination to add new elements on page
+See it in action: http://www.desaturate.net/design
 
 # Configuration
 In config.js,
