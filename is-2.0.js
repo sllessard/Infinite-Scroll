@@ -105,5 +105,3 @@ class InfiniteScroll {
     observer.observe(targetNode, observerConfig);
   }
 }
-
-export { InfiniteScroll };
