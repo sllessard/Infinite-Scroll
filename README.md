@@ -10,7 +10,8 @@ Add is-2.0.min.js and initalize
 ```
 
 # Initalization and Configuration
-In config.js,
+Create new instance with the necessary configurations,
+
 
 Required:
 
@@ -22,5 +23,5 @@ Required:
     
 Optional:
 
-    siteAjaxId: '', //REQUIRED IF: Ajax is used sitewide to reload pages in navigation. Add ID to site Ajax container.
+    siteAjaxId: '', //REQUIRED when Ajax is used sitewide to reload pages in navigation. Add ID to site Ajax container.
     scrollThreshold: 0 //Numerical value referencing pixel threshold for appending items before end of page.
