@@ -69,7 +69,7 @@ class InfiniteScroll {
       type: 'GET',
       url: $(this.pagination).attr('href'),
       success: (data) => {
-        let newItems = $(data).find(this.items);
+        let newItems = $(data).find(this.itemsClass);
         this.nextPag = $(data).find(this.pagination).attr('href');
         $(this.container).append(newItems);
         if (this.currentPag !== this.nextPag) {
