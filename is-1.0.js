@@ -11,8 +11,10 @@ class InfiniteScroll {
 	}
 
 	infScrollInit = () => {
-		this.domWatcher();
 		this.infScroll('init');
+		if (this.hasOwnProperty('siteAjaxId')) {
+		  this.domWatcher();
+		}
 	}
 
 // Verify page has pagination anchor then preload content to fill window. 
@@ -99,7 +101,7 @@ class InfiniteScroll {
 			characterData: false 
 		};
 		
-		let targetNode = document.getElementById('ajaxContent');
+		let targetNode = document.getElementById(this.siteAjaxId);
 		observer.observe(targetNode, observerConfig);
 	}
 }
