@@ -11,14 +11,16 @@ class InfiniteScroll {
 	}
 
 	infScrollInit = () => {
-		this.pageWatcher();
-		this.infScroll();
+		this.domWatcher();
+		this.infScroll('init');
 	}
 
+// Verify page has pagination anchor then preload content to fill window. 
+// After preload set scroll and resize listeners. 
 	infScroll = () => {
 		if ($(this.pagination).length > 0) {
-			if (this.scrollPosition()) {
-				this.scrollAjax();
+			if (this.checkScrollPosition()) {
+				this.scrollAjaxCall();
 			} else {
 				$(document).on('scroll', this.eventHandler);
 				$(window).on('resize', this.eventHandler);
@@ -26,87 +28,80 @@ class InfiniteScroll {
 		}
 	}
 
+// Check if the scroll position has passed the content height with threshold if provided.
+	checkScrollPosition = () => {
+		const containerTop = $(this.container).position().top;
+		let containerHeight = containerTop + $(this.container).outerHeight(true);
+		let scrollOffset = ($(window).scrollTop() + $(window).height()) + this.scrollThreshold;
+		return containerHeight <= scrollOffset;
+	}
+
+// Check scroll position after scroll or resize.
 	eventHandler = () => {
 		this.disableInfiniteEvents();
-		if (this.scrollPosition()) {
-			this.scrollAjax(); //Append new items if scroll position > container
+		if (this.checkScrollPosition()) {
+			this.scrollAjaxCall(); 
 		} else {
-				this.timeoutReset(); //Reinitialize event listeners
-			}
+			this.timeoutReset(); 
 		}
+	}
 
-		disableInfiniteEvents = () => {
-			$(document).off('scroll', this.eventHandler);
-			$(window).off('resize', this.eventHandler);
-		}
+// Remove event listeners to prevent duplicate content
+	disableInfiniteEvents = () => {
+		$(document).off('scroll', this.eventHandler);
+		$(window).off('resize', this.eventHandler);
+	}
 
-		scrollAjax = () => {
-			$.ajax({
-				type: 'GET',
-				url: $(this.pagination).attr('href'),
-				success: (data) => {
-					let newItems = $(data).find(this.items);
-					this.nextPag = $(data).find(this.pagination).attr('href');
+// After eventHandler or scrollAjaxCall run infScroll
+// infScroll called to check if scroll position after initial event call has exceeded content height
+	timeoutReset = () => {
+		setTimeout(() => {
+			this.infScroll();
+		}, 250);
+	}
 
-					$(this.container).append(newItems);
-					if (this.currentPag !== this.nextPag) {
-						$(this.pagination).attr('href', this.nextPag);
-
-					if (this.nextPag === undefined) { //Check if additional items exist to load on new event
-						/*$(document).on('ajaxStart', this.pageWatcher);*/
+// Load new content with Ajax call.
+// Only call timeoutReset if updated pagination will have new content by comparing URLs
+	scrollAjaxCall = () => {
+		$.ajax({
+			type: 'GET',
+			url: $(this.pagination).attr('href'),
+			success: (data) => {
+				let newItems = $(data).find(this.items);
+				this.nextPag = $(data).find(this.pagination).attr('href');
+				$(this.container).append(newItems);
+				if (this.currentPag !== this.nextPag) {
+					$(this.pagination).attr('href', this.nextPag);
+					if (this.nextPag === undefined) { 
 						return;
 					} else {	
 						this.currentPag = this.nextPag;
-						this.timeoutReset(); //Reset events if additional items exist
+						this.timeoutReset();
 					}
 				}
 			}
 		});
-		}
-
-		timeoutReset = () => {
-			setTimeout(() => {
-				this.infScroll();
-			}, 250);
-		}
-
-		pageWatcher = () => {
-			let observer = new MutationObserver(()=>{
-				this.disableInfiniteEvents();
-				this.nextPag= '',
-				/*$(document).off('ajaxStart', this.pageWatcher);*/
-				this.infScroll();
-			});
-			
-			// Notify me of everything!
-			let observerConfig = {
-				attributes: false, 
-				childList: true, 
-				characterData: false 
-			};
-			
-			// Node, config
-			// In this case we'll listen to all changes to body and child nodes
-			let targetNode = document.getElementById('ajaxContent');
-			observer.observe(targetNode, observerConfig);
-
-		}
-
-		scrollPosition = () => {
-			try {
-				const containerTop = $(this.container).position().top;
-				return ( () => {
-					let containerHeight = containerTop + $(this.container).outerHeight(true);
-					let scrollOffset = ($(window).scrollTop() + $(window).height()) + this.scrollThreshold;
-					return containerHeight <= scrollOffset;
-				})();
-
-			}
-
-			catch(e){
-				return  false;
-			}
-		}
 	}
 
-	export { InfiniteScroll };
+// Watch for mutations to changes in DOM to detect Ajax navigation changes
+// If a page change occurs, reset nextPag and disable events.
+// infScroll checks if new page has pagination for Infinite Scroll
+	domWatcher = () => {
+		let observer = new MutationObserver(()=>{
+			this.disableInfiniteEvents();
+			this.nextPag= '',
+			this.infScroll();
+		});
+
+		let observerConfig = {
+			attributes: false, 
+			childList: true, 
+			characterData: false 
+		};
+		
+		let targetNode = document.getElementById('ajaxContent');
+		observer.observe(targetNode, observerConfig);
+	}
+}
+
+export { InfiniteScroll };
