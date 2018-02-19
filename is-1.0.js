@@ -1,8 +1,8 @@
 "use strict";
 
 class InfiniteScroll {
-  constructor(userOptions = {}) {
-	  Object.assign(this, {
+	constructor(userOptions = {}) {
+		Object.assign(this, {
 			scrollThreshold: 10,
 			currentPag: '',
 			nextPag: ''
