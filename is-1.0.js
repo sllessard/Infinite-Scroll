@@ -1,5 +1,5 @@
 "use strict";
-
+  
 class InfiniteScroll {
 	constructor(userOptions = {}) {
 		Object.assign(this, {
