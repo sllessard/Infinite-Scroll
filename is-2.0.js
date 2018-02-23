@@ -21,7 +21,7 @@ class InfiniteScroll {
   // After preload set scroll and resize listeners. 
   infScroll = () => {
     if ($(this.pagination).length > 0) {
-      if (this.checkScrollPosition()) {
+      if (this.scrollPosition()) {
         this.scrollAjaxCall();
       } else {
         $(document).on('scroll', this.eventHandler);
@@ -31,7 +31,7 @@ class InfiniteScroll {
   }
 
   // Check if the scroll position has passed the content height with threshold if provided.
-  checkScrollPosition = () => {
+  scrollPosition = () => {
     const containerTop = $(this.container).position().top;
     let containerHeight = containerTop + $(this.container).outerHeight(true);
     let scrollOffset = ($(window).scrollTop() + $(window).height()) + this.scrollThreshold;
@@ -40,11 +40,9 @@ class InfiniteScroll {
 
   // Check scroll position after scroll or resize.
   eventHandler = () => {
-    this.disableInfiniteEvents();
-    if (this.checkScrollPosition()) {
+    if (this.scrollPosition()) {
+      this.disableInfiniteEvents();
       this.scrollAjaxCall(); 
-    } else {
-      this.timeoutReset(); 
     }
   }
 
@@ -105,3 +103,5 @@ class InfiniteScroll {
     observer.observe(targetNode, observerConfig);
   }
 }
+
+export { InfiniteScroll };
