@@ -5,13 +5,18 @@ class InfiniteScroll {
     Object.assign(this, {
       scrollThreshold: 10,
       currentPag: '',
-      nextPag: ''
+      nextPag: '',
+      containerTop: 0,
+      containerHeight: 0
     }, userOptions);
     this.infScrollInit();
   }
 
   infScrollInit = () => {
-    this.infScroll('init');
+    if ($(this.pagination).length > 0) {
+      this.containerTop = $(this.container).position().top;
+      this.infScroll('init');
+    }
     if (this.hasOwnProperty('siteAjaxId')) {
       this.domWatcher();
     }
@@ -20,22 +25,19 @@ class InfiniteScroll {
   // Verify page has pagination anchor then preload content to fill window. 
   // After preload set scroll and resize listeners. 
   infScroll = () => {
-    if ($(this.pagination).length > 0) {
-      if (this.scrollPosition()) {
-        this.scrollAjaxCall();
-      } else {
-        $(document).on('scroll', this.eventHandler);
-        $(window).on('resize', this.eventHandler);
-      }
+    this.containerHeight = this.containerTop + $(this.container).outerHeight(true);
+    if (this.scrollPosition()) {
+      this.scrollAjaxCall();
+    } else {
+      $(document).on('scroll', this.eventHandler);
+      $(window).on('resize', this.eventHandler);
     }
   }
 
   // Check if the scroll position has passed the content height with threshold if provided.
   scrollPosition = () => {
-    const containerTop = $(this.container).position().top;
-    let containerHeight = containerTop + $(this.container).outerHeight(true);
     let scrollOffset = ($(window).scrollTop() + $(window).height()) + this.scrollThreshold;
-    return containerHeight <= scrollOffset;
+    return this.containerHeight <= scrollOffset;
   }
 
   // Check scroll position after scroll or resize.
@@ -89,8 +91,9 @@ class InfiniteScroll {
   domWatcher = () => {
     let observer = new MutationObserver(()=>{
       this.disableInfiniteEvents();
-      this.nextPag= '',
-      this.infScroll();
+      observer.disconnect();
+      this.nextPag= '';
+      this.infScrollInit();
     });
 
     let observerConfig = {
@@ -103,5 +106,3 @@ class InfiniteScroll {
     observer.observe(targetNode, observerConfig);
   }
 }
-
-export { InfiniteScroll };
