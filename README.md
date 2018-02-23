@@ -15,11 +15,11 @@ Create new instance with the necessary configurations,
 
 Required:
 
-    let scrollLoad = new InfiniteScroll {
-    pagination: ' ', //Pagination anchor ID
-    container: ' ', //Container ID where items will be appended
-    itemsClass: ' ' //Class for elements that will be appended
-    }
+    let scrollLoad = new InfiniteScroll ({
+      pagination: ' ', //Pagination anchor ID
+      container: ' ', //Container ID where items will be appended
+      itemsClass: ' ' //Class for elements that will be appended
+    });
     
 Optional:
 
