@@ -1,4 +1,4 @@
-# Infinite-Scroll
+# Infinite-Scroll - 2018
 Utilize site pagination to add new elements on page.
 
 See it in action: http://www.desaturate.net/design
