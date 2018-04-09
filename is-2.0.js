@@ -15,7 +15,7 @@ class InfiniteScroll {
   infScrollInit = () => {
     if ($(this.pagination).length > 0) {
       this.containerTop = $(this.container).position().top;
-      this.infScroll('init');
+      this.infScroll();
     }
     if (this.hasOwnProperty('siteAjaxId')) {
       this.domWatcher();
